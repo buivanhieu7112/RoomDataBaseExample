@@ -16,6 +16,13 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+    <Button
+        android:text="Delete All"
+        android:id="@+id/buttonDeleteAllUser"
+        app:layout_constraintLeft_toRightOf="@id/buttonAddUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_user"
         android:layout_width="match_parent"

@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initData();
-//        getData();
+        getData();
     }
 
     @Override
@@ -48,7 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCompositeDisposable = new CompositeDisposable();
         RecyclerView recyclerView = findViewById(R.id.rv_user);
         Button buttonAdd = findViewById(R.id.buttonAddUser);
+        Button buttonDelete = findViewById(R.id.buttonDeleteAllUser);
         buttonAdd.setOnClickListener(this);
+        buttonDelete.setOnClickListener(this);
         mUserList = new ArrayList<>();
         mAdapter = new UserAdapter(this);
         recyclerView.setAdapter(mAdapter);
@@ -119,10 +121,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCompositeDisposable.add(disposable);
     }
 
+    private void deleteAllData() {
+        Disposable disposable = io.reactivex.Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> e) throws Exception {
+                mUserRepository.deleteAllUser();
+                e.onComplete();
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<Object>() {
+
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        // no method
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        onGetAllUserFailure(throwable.getMessage());
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        getData();
+                    }
+                });
+        mCompositeDisposable.add(disposable);
+    }
+
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.buttonAddUser){
+        if (v.getId() == R.id.buttonAddUser) {
             setData();
+        }
+        if (v.getId() == R.id.buttonDeleteAllUser) {
+            deleteAllData();
         }
     }
 }
